@@ -3,9 +3,10 @@ import stripe
 from django.shortcuts import render, reverse, redirect
 import os
 import openai
+from django.contrib.sessions.models import Session
 
 
-openai.api_key = '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'
+openai.api_key = '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'
 # Create your views here.
 
 
@@ -21,6 +22,7 @@ def generatesocialmediacaptions(prompt):
         presence_penalty=0
     )
     result = response['choices'][0]['text']
+    print(result)
     return result
 
 
@@ -118,25 +120,40 @@ def home(request):
             reverse('result'))+'?session_id={CHECKOUT_SESSION_ID}',
         cancel_url=request.build_absolute_uri(reverse('home')),
     )
+    print(session)
+    request.session.modified = True
     if request.method == 'POST':
         prompt = request.POST['describe']
         content_type = request.POST['content_type']
         content_type = int(content_type)
         request.session['content_type'] = content_type
         request.session['prompt'] = prompt
+        request.session.modified = True
         print(content_type,">>>")
         if content_type == 1:
             result = generatearticle(prompt)
             # print(result)
             request.session['result'] = result
+            # make Django update sessions in templates
+            request.session.modified = True
+
             return render(request, 'result.html')
         elif content_type == 2:
+            print(">>>>")
             result = generatesocialmediacaptions(prompt)
+            print(result,"result>>>")
             # 'content_type'=content_type, 'prompt': prompt
             # context={'result': result, 'content_type': content_type, 'prompt': prompt}
             # print(context)
             # request.session['result'] = result
             request.session['result'] = result
+            # for session_key in logged_in:
+            #     s = SessionStore(session_key=session_key)
+            #     s['result'] = result
+            #     s.save()
+            #     s.modified
+            # make Django update sessions in templates
+            request.session.modified = True
            
             # print(request.session['result'],"Sessions")
             # return redirect('result/?result='+result+'&content_type='+str(content_type)+'&prompt='+prompt)
@@ -144,16 +161,20 @@ def home(request):
         elif content_type == 3:
             result = generateshortstory(prompt)
             request.session['result'] = result
+            # make Django update sessions in templates
+            request.session.modified = True
     
-            return render(request, 'result.html', {'result': result, 'content_type': content_type, 'prompt': prompt})
+            return render(request, 'result.html')
         elif content_type == 4:
             result = generatepoems(prompt)
             request.session['result'] = result
-            return render(request, 'result.html', {'result': result, 'content_type': content_type, 'prompt': prompt})
+            # make Django update sessions in templates
+            request.session.modified = True
+            return render(request, 'result.html')
 
     else:
 
-        return render(request, 'home.html', {'session_id': session.id, 'stripe_public_key': settings.STRIPE_PUBLIC_KEY})
+        return render(request, 'home.html', {'session_id': session.id, 'stripe_public_key': settings.STRIPE_PUBLIC_KEY,'amount':session.amount_total//100})
 
 
 def result(request):
@@ -171,7 +192,9 @@ def result(request):
         cancel_url=request.build_absolute_uri(reverse('result')),
     )
     # 'content_type': content_type, 'prompt': prompt
-    ctx = {'result':  request.session['result'],'content_type': request.session.get('content_type'),'prompt': request.session.get('prompt'),'session_id': session.id, 'stripe_public_key': settings.STRIPE_PUBLIC_KEY}
+    ctx = {'result':  request.session.get('result'),'content_type': request.session.get('content_type'),'prompt': request.session.get('prompt'),'session_id': session.id, 'stripe_public_key': settings.STRIPE_PUBLIC_KEY,'amount':session.amount_total//100}
+    request.session.modified = True
+
     if request.method == 'POST':
         prompt = request.POST['describe']
         content_type = request.POST.get('content_type')
@@ -179,28 +202,40 @@ def result(request):
         print(content_type)
         request.session['content_type'] = content_type
         request.session['prompt'] = prompt
+        # request.session.modified = True
         if content_type == 1:
             result = generatearticle(prompt)
+            # print(result)
             request.session['result'] = result
-            return render(request, 'result.html', {'result': result, 'prompt': prompt})
+            # make Django update sessions in templates
+            request.session.modified = True
+            return render(request, 'result.html')
         elif content_type == 2:
 
             result = generatesocialmediacaptions(prompt)
             request.session['result'] = result
+            # make Django update sessions in templates
+            request.session.modified = True
             # request.session['result'] = result
             # request.session['content_type'] = content_type
             # request.session['prompt'] = prompt
             return render(request, 'result.html', {'result': result, 'prompt': prompt})
         elif content_type == 3:
             result = generateshortstory(prompt)
+            request.session['result'] = result
+            # make Django update sessions in templates
+            request.session.modified = True
             return render(request, 'result.html', {'result': result, 'prompt': prompt})
         elif content_type == 4:
             result = generatepoems(prompt)
             request.session['result'] = result
+            # make Django update sessions in templates
+            request.session.modified = True
             return render(request, 'result.html', {'result': result, 'prompt': prompt})
 
     else:
-
+        # make Django update sessions in templates
+      
         return render(request, 'result.html',ctx )
 
 
