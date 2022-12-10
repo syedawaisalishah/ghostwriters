@@ -22,7 +22,7 @@ def generatesocialmediacaptions(prompt):
         presence_penalty=0
     )
     result = response['choices'][0]['text']
-    print(result)
+
     return result
 
 
@@ -129,7 +129,7 @@ def home(request):
         request.session['content_type'] = content_type
         request.session['prompt'] = prompt
         request.session.modified = True
-        print(content_type,">>>")
+     
         if content_type == 1:
             result = generatearticle(prompt)
             # print(result)
@@ -139,9 +139,9 @@ def home(request):
 
             return render(request, 'result.html')
         elif content_type == 2:
-            print(">>>>")
+     
             result = generatesocialmediacaptions(prompt)
-            print(result,"result>>>")
+        
             # 'content_type'=content_type, 'prompt': prompt
             # context={'result': result, 'content_type': content_type, 'prompt': prompt}
             # print(context)
@@ -199,7 +199,7 @@ def result(request):
         prompt = request.POST['describe']
         content_type = request.POST.get('content_type')
         content_type = int(content_type)
-        print(content_type)
+  
         request.session['content_type'] = content_type
         request.session['prompt'] = prompt
         # request.session.modified = True
