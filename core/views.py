@@ -6,7 +6,7 @@ import openai
 from django.contrib.sessions.models import Session
 
 
-openai.api_key = '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'
+openai.api_key = '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'
 # Create your views here.
 
 
@@ -120,7 +120,7 @@ def home(request):
             reverse('result'))+'?session_id={CHECKOUT_SESSION_ID}',
         cancel_url=request.build_absolute_uri(reverse('home')),
     )
-    print(session)
+
     request.session.modified = True
     if request.method == 'POST':
         prompt = request.POST['describe']
@@ -154,7 +154,7 @@ def home(request):
             #     s.modified
             # make Django update sessions in templates
             request.session.modified = True
-           
+
             # print(request.session['result'],"Sessions")
             # return redirect('result/?result='+result+'&content_type='+str(content_type)+'&prompt='+prompt)
             return render(request, 'result.html')
