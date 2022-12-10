@@ -6,7 +6,7 @@ import openai
 from django.contrib.sessions.models import Session
 
 
-openai.api_key = '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'
+openai.api_key = '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'
 # Create your views here.
 
 
