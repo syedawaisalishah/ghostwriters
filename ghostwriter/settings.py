@@ -20,12 +20,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'mw&997&bb_f@o0+_m+ktl8i57icxdgjh5r-a1$$xq@f5g&s*kl'
+SECRET_KEY = '%ig@&lm^w360is+=smgvt7ry(b%n+*sb9jrv_zcy7x^#rzn05d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["34.27.36.215",'*']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,13 +37,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core'
+    'core',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',     # NEW
     'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',  # NEW
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -121,9 +123,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-STATIC_URL = '/static/'
-
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
@@ -139,16 +138,23 @@ STRIPE_PUBLIC_KEY='pk_test_51MAdaqKWEumvZSLCQIbRZlLVhmZ8XUFUkBYYuChIrlr8fHk9XcAX
 #stripe secret key
 STRIPE_SECRET_KEY='sk_test_51MAdaqKWEumvZSLCZJKLJIPJwe2YCTp0REm7m3Y2zJ9HWAdYjzfNhHKH8VNcDIGHoFVqFHqR3fDBZjxrR0qSgljJ00WO5O0oAU'
 
-SESSION_SAVE_EVERY_REQUEST=True
+# s example, the cache table’s name is my_cache_table:
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+        'TIMEOUT': None  
+    }
+}
 
 
 
-CORS_REPLACE_HTTPS_REFERER = False 
-HOST_SCHEME = "http://" 
-SECURE_PROXY_SSL_HEADER = None 
-SECURE_SSL_REDIRECT = False 
-SESSION_COOKIE_SECURE = False 
-CSRF_COOKIE_SECURE = False 
-SECURE_HSTS_SECONDS = None 
-SECURE_HSTS_INCLUDE_SUBDOMAINS = False 
-SECURE_FRAME_DENY = False
+
+
+# STRIPE_PUBLIC_KEY='pk_test_51MC65NCrrUscKppkxm59XgHY6pIE1QA4G1BU2kiKkbCTm235vyxKgGB1hQOMCPYZ3ll2U89bbsih0hFhOMxl631700NZg0vk0W'
+
+# #stripe secret key
+# STRIPE_SECRET_KEY='sk_test_51MC65NCrrUscKppkNRwJuk3C3vuOTINdBnGtmo10yZFaZmu0PN55wKWM2l6Ctfpb1ejvkA2NRDpSO14NXkCADQuw00kEMbSvvj'
+
+
