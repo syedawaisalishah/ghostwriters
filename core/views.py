@@ -6,7 +6,7 @@ import openai
 from django.core.cache import cache
 
 
-openai.api_key = ''
+openai.api_key = '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'
 # Create your views here.
 
 
